@@ -4,6 +4,7 @@ Pod::Spec.new do |s|
   s.summary      = "Qt is a cross-platform application and UI framework for developers using C++ or QML, a CSS & JavaScript like language."
   s.homepage     = "http://qt-project.org/"
   s.author       = "The Qt Project"
+  s.license      = "LGPL"
 
   s.source       = { :git => "https://github.com/torarnv/qtiostoolbox.git" }
   s.platform     = :ios
