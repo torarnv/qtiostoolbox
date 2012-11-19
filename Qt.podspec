@@ -8,6 +8,14 @@ Pod::Spec.new do |s|
   s.source         = { :git => 'https://github.com/torarnv/qtiostoolbox.git' }
   s.platform       = :ios
   s.source_files   = 'QtQuickView'
+  s.subspec 'QtPlatformPlugin' do |platformplugin|
+    platformplugin.xcconfig = { 'OTHER_LDFLAGS' => '-force_load $(SDKROOT)/usr/plugins/platforms/libqios.a' }
+    platformplugin.libraries = 'z', 'm'
+    platformplugin.frameworks = 'UIKit', 'QuartzCore', 'CoreFoundation', 'OpenGLES'
+    platformplugin.dependency 'Qt/QtPlatformSupport'
+    platformplugin.dependency 'Qt/QtGui'
+    platformplugin.dependency 'Qt/QtCore'
+  end
   s.subspec 'QtCore' do |core|
     core.libraries = 'Qt5Core', 'z', 'm'
     core.frameworks = 'CoreFoundation'
@@ -18,6 +26,7 @@ Pod::Spec.new do |s|
     gui.frameworks = 'CoreFoundation', 'OpenGLES'
     gui.xcconfig = { 'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/QtGui' }
     gui.dependency 'Qt/QtCore'
+    gui.dependency 'Qt/QtPlatformPlugin'
   end
   s.subspec 'QtNetwork' do |network|
     network.libraries = 'Qt5Network', 'z', 'm', 'z'

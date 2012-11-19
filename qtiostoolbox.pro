@@ -22,7 +22,7 @@ PODSPEC += \
 
 defineTest(parseLibs) {
     var = $$1
-    parse_prl = $$2
+    libFunc = $$2
 
     unset(path)
     unset(framework)
@@ -34,15 +34,7 @@ defineTest(parseLibs) {
             path = $$replace(lib, ^-L, )
         } else:contains(lib, ^-l.*) {
             lib = $$replace(lib, ^-l, )
-            equals(parse_prl, true) {
-                libs += "'$$lib'"
-                prl_file = $$path/lib$${lib}.prl
-                exists($$prl_file): prl_libs = $$fromfile($$path/lib$${lib}.prl, QMAKE_PRL_LIBS)
-                parseLibs(prl_libs, false)
-            } else:!contains(lib, ^Qt.*) {
-                # We let the specfile take care of dependencies, so we only add non-Qt libraries
-                libs += "'$$lib'"
-            }
+            eval($${libFunc}($$path, $$lib))
         } else:equals(framework, true) {
             frameworks += "'$$lib'"
         }
@@ -52,6 +44,71 @@ defineTest(parseLibs) {
 
     export(libs)
     export(frameworks)
+}
+
+# ------ Platform plugin -------
+
+unset(QT)
+unset(LIBS)
+QTPLUGIN = ios
+load(qt)
+
+name = QtPlatformPlugin
+PODSPEC += "  s.subspec '$$name' do |platformplugin|"
+
+defineTest(addLibsAndDepends) {
+    # We let the podspec take care of dependencies to other Qt libs
+    contains(2, ^Qt.*): depends += $$replace(2, ^Qt$${QT_MAJOR_VERSION}, Qt)
+    else: libs += "'$$2'"
+    export(libs)
+    export(depends)
+}
+
+defineTest(addPluginAndRecursePrl) {
+    ldflags = "-force_load $(SDKROOT)/usr/plugins/platforms/lib$${2}.a"
+    prl_file = $$1/lib$${2}.prl
+    exists($$prl_file) {
+        prl_libs = $$fromfile($$prl_file, QMAKE_PRL_LIBS)
+        parseLibs(prl_libs, addLibsAndDepends)
+    }
+    export(libs)
+    export(ldflags)
+}
+unset(libs)
+unset(frameworks)
+unset(depends)
+message($$LIBS)
+parseLibs(LIBS, addPluginAndRecursePrl)
+
+PODSPEC += "    platformplugin.xcconfig = { 'OTHER_LDFLAGS' => '$$ldflags' }"
+PODSPEC += "    platformplugin.libraries = $$join(libs, ', ')"
+PODSPEC += "    platformplugin.frameworks = $$join(frameworks, ', ')"
+
+for(dep, depends) {
+    PODSPEC += "    platformplugin.dependency 'Qt/$$dep'"
+}
+
+PODSPEC += "  end"
+
+QT.gui.depends += platformplugin
+QT.platformplugin.name = QtPlatformPlugin
+
+# ------ Qt modules ------
+
+defineTest(addOnlyNonQtLibs) {
+    # We let the podspec take care of dependencies to other Qt libs
+    !contains(2, ^Qt.*): libs += "'$$2'"
+    export(libs)
+}
+
+defineTest(addAndRecursePrl) {
+    libs += "'$$2'"
+    prl_file = $$1/lib$${2}.prl
+    exists($$prl_file) {
+        prl_libs = $$fromfile($$prl_file, QMAKE_PRL_LIBS)
+        parseLibs(prl_libs, addOnlyNonQtLibs)
+    }
+    export(libs)
 }
 
 modules = core gui network platformsupport
@@ -66,7 +123,7 @@ for(module, modules) {
 
     unset(libs)
     unset(frameworks)
-    parseLibs(LIBS, true)
+    parseLibs(LIBS, addAndRecursePrl)
 
     PODSPEC += "    $${module}.libraries = $$join(libs, ', ')"
     PODSPEC += "    $${module}.frameworks = $$join(frameworks, ', ')"
