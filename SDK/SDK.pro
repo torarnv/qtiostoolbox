@@ -34,8 +34,10 @@ for(lib, LIBS) {
 }
 
 defineReplace(finalPath) {
-    return($$DESTDIR/$$replace(1, $$relative_path($$[QT_INSTALL_PREFIX/get]), ))
+    return($$DESTDIR/$$replace(1, $$[QT_INSTALL_PREFIX/get], ))
 }
+
+CONFIG += no_fixpath
 
 libs.input = LIB_PATHS
 libs.output_function = finalPath
