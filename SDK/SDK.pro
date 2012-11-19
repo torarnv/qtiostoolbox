@@ -9,10 +9,10 @@ QMAKE_SDK_NAME = iphoneos # FIME: Get from qmake
 SDKDIR = $${QMAKE_SDK_NAME}.sdk
 DESTDIR = $$SDKDIR/System/Library/Frameworks
 
-SDKSETTINGS = SDKSettings.in
+SDKSETTINGS = SDKSettings.plist
 sdksettings.input = SDKSETTINGS
 sdksettings.output = $${SDKDIR}/${QMAKE_FILE_IN_BASE}.plist
-sdksettings.commands = sed s/QMAKE_SDK_NAME/$${QMAKE_SDK_NAME}/ ${QMAKE_FILE_IN} > ${QMAKE_FILE_OUT}
+sdksettings.commands = sed s/@QMAKE_SDK_NAME@/$${QMAKE_SDK_NAME}/ ${QMAKE_FILE_IN} > ${QMAKE_FILE_OUT}
 sdksettings.CONFIG = no_link target_predeps
 QMAKE_EXTRA_COMPILERS += sdksettings
 
