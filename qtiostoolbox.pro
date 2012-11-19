@@ -85,7 +85,6 @@ defineTest(addPluginAndRecursePrl) {
 unset(libs)
 unset(frameworks)
 unset(depends)
-message($$LIBS)
 parseLibs(LIBS, addPluginAndRecursePrl)
 
 PODSPEC += "    platformplugin.xcconfig = { 'OTHER_LDFLAGS' => '$$ldflags' }"
