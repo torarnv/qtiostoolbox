@@ -19,7 +19,11 @@ Pod::Spec.new do |s|
   s.subspec 'QtCore' do |core|
     core.libraries = 'Qt5Core', 'z', 'm'
     core.frameworks = 'CoreFoundation'
-    core.xcconfig = { 'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/QtCore' }
+    core.xcconfig = {
+      'ADDITIONAL_SDKS'     => '${PODS_ROOT}/Qt/SDK/$(PLATFORM_NAME).sdk',
+      'VALID_ARCHS'         => 'armv7',
+      'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/QtCore'
+    }
   end
   s.subspec 'QtGui' do |gui|
     gui.libraries = 'Qt5Gui', 'z', 'm', 'z'

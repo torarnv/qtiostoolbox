@@ -20,6 +20,14 @@ PODSPEC += \
     "  s.platform       = :ios" \
     "  s.source_files   = 'QtQuickView'"
 
+# We add the SDK and ARCH settings to QtCore, which is a dependency for
+# everything else. If we add it straight to the root spec, all the
+# other specs will intherit it, and CocoaPods does not seem to
+# prune identical settings.
+QT.core.xcconfig = \
+    "'ADDITIONAL_SDKS'     => '${PODS_ROOT}/Qt/SDK/$(PLATFORM_NAME).sdk'," \
+    "'VALID_ARCHS'         => 'armv7',"
+
 defineTest(parseLibs) {
     var = $$1
     libFunc = $$2
@@ -127,8 +135,16 @@ for(module, modules) {
 
     PODSPEC += "    $${module}.libraries = $$join(libs, ', ')"
     PODSPEC += "    $${module}.frameworks = $$join(frameworks, ', ')"
-    PODSPEC += "    $${module}.xcconfig = { 'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/$${name}' }"
 
+    xcconfig = $$eval(QT.$${module}.xcconfig)
+    xcconfig += "'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/$${name}'"
+    count(xcconfig, 1) {
+        PODSPEC += "    $${module}.xcconfig = { $$xcconfig }"
+    } else {
+        PODSPEC += "    $${module}.xcconfig = {"
+        for(config, xcconfig): PODSPEC += "      $$config"
+        PODSPEC += "    }"
+    }
     depends = $$eval(QT.$${module}.depends)
     for(dep, depends) {
         depname = $$eval(QT.$${dep}.name)
