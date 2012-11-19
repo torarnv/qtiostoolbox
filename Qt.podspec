@@ -13,4 +13,6 @@ Pod::Spec.new do |s|
   # FIXME: Generate based on prl files
   s.frameworks = 'CoreFoundation', 'OpenGLES'
   s.libraries = 'z', 'm'
+
+  s.xcconfig = { "ADDITIONAL_SDKS" => '${PODS_ROOT}/Qt/SDK/$(PLATFORM_NAME).sdk' }
 end
