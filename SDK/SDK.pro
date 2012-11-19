@@ -12,7 +12,7 @@ sdksettings.commands = sed s/@QMAKE_SDK_NAME@/$${QMAKE_SDK_NAME}/ ${QMAKE_FILE_I
 sdksettings.CONFIG = no_link target_predeps
 QMAKE_EXTRA_COMPILERS += sdksettings
 
-QT = core gui
+QT = core gui network platformsupport
 QTPLUGIN = ios iosmain
 
 unset(LIBS)
