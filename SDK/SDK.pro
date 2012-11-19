@@ -3,6 +3,7 @@ CONFIG += shared framework lib_bundle
 CONFIG -= qt_no_framework static staticlib
 
 TARGET = Qt
+VERSION = $$QT_VERSION
 
 QMAKE_SDK_NAME = iphoneos # FIME: Get from qmake
 
@@ -26,13 +27,41 @@ unset(QMAKE_LFLAGS_VERSION)
 unset(QMAKE_LFLAGS)
 unset(QMAKE_LIBS_OPENGL_ES2)
 
-QT += gui widgets printsupport core
-QTPLUGIN += qtmain
-
-load(qt)
-
-# FIXME: Transform into libtool arguments
-message(LIBS = $$LIBS)
+QT = core gui
+QTPLUGIN = ios iosmain
 
 unset(LIBS)
+unset(INCLUDEPATH)
+load(qt)
+
+unset(path)
+for(lib, LIBS) {
+    contains(lib, ^-L.*) {
+        path = $$replace(lib, ^-L, )
+        next()
+    }
+    contains(lib, ^-l.*) {
+        # We can't put these into OBJECTS, as 'make clean' would then delete
+        # the Qt libraries and plugins.
+        QMAKE_LFLAGS += $$path/lib$$replace(lib, ^-l, ).a
+        next()
+    }
+}
+unset(LIBS)
 unset(LIBS_PRIVATE)
+
+unset(includes)
+for(path, INCLUDEPATH) {
+    equals(path, $$[QT_INSTALL_HEADERS]): next()
+    includes += $$path #$$files($$path/*)
+}
+
+HEADERS += $$includes
+
+FRAMEWORK_HEADERS.version = Versions
+FRAMEWORK_HEADERS.files = $$includes
+FRAMEWORK_HEADERS.path = Headers
+QMAKE_BUNDLE_DATA += FRAMEWORK_HEADERS
+
+QMAKE_INFO_PLIST = Info.plist
+
