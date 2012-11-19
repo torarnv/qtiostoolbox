@@ -1,6 +1,6 @@
 TEMPLATE = aux
 
-QMAKE_SDK_NAME = iphonesimulator # FIME: Get from qmake
+isEmpty(QMAKE_SDK_NAME): QMAKE_SDK_NAME = iphoneos # FIME: Get from qmake
 
 SDKDIR = $${QMAKE_SDK_NAME}.sdk
 DESTDIR = $$SDKDIR/usr
