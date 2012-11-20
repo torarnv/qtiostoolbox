@@ -7,7 +7,7 @@
 	<key>DefaultProperties</key>
 	<dict>
 	    <key>PLATFORM_NAME</key>
-	    <string>@QMAKE_SDK_NAME@</string>
+	    <string>@QMAKE_MAC_PLATFORM_NAME@</string>
 	</dict>
 	<key>IsBaseSDK</key>
 	<string>NO</string>

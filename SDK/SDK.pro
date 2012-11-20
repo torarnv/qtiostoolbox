@@ -1,14 +1,15 @@
 TEMPLATE = aux
 
-isEmpty(QMAKE_SDK_NAME): QMAKE_SDK_NAME = iphoneos # FIME: Get from qmake
+load(sdk)
+isEmpty(QMAKE_MAC_PLATFORM_NAME): QMAKE_MAC_PLATFORM_NAME = iphoneos
 
-SDKDIR = $${QMAKE_SDK_NAME}.sdk
+SDKDIR = $${QMAKE_MAC_PLATFORM_NAME}.sdk
 DESTDIR = $$SDKDIR/usr
 
 SDKSETTINGS = SDKSettings.plist
 sdksettings.input = SDKSETTINGS
 sdksettings.output = $${SDKDIR}/${QMAKE_FILE_IN_BASE}.plist
-sdksettings.commands = sed s/@QMAKE_SDK_NAME@/$${QMAKE_SDK_NAME}/ ${QMAKE_FILE_IN} > ${QMAKE_FILE_OUT}
+sdksettings.commands = sed s/@QMAKE_MAC_PLATFORM_NAME@/$${QMAKE_MAC_PLATFORM_NAME}/ ${QMAKE_FILE_IN} > ${QMAKE_FILE_OUT}
 sdksettings.CONFIG = no_link target_predeps
 QMAKE_EXTRA_COMPILERS += sdksettings
 
