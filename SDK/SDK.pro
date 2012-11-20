@@ -33,23 +33,25 @@ for(lib, LIBS) {
     }
 }
 
-defineReplace(finalPath) {
+defineReplace(ABS_FILE_IN) {
+    return($$absolute_path($$1, $$OUT_PWD))
+}
+
+defineReplace(outputFunction) {
     return($$DESTDIR/$$replace(1, $$[QT_INSTALL_PREFIX/get], ))
 }
 
-CONFIG += no_fixpath
-
 libs.input = LIB_PATHS
-libs.output_function = finalPath
-libs.commands = ln -f -s ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+libs.output_function = outputFunction
+libs.commands = ln -f -s ${QMAKE_FUNC_ABS_FILE_IN} ${QMAKE_FILE_OUT}
 libs.CONFIG = no_link target_predeps
 QMAKE_EXTRA_COMPILERS += libs
 
 qt_includes = $$INCLUDEPATH
 qt_includes -= $$[QT_INSTALL_HEADERS/get]
 headers.input = qt_includes
-headers.output_function = finalPath
-headers.commands = ln -F -s ${QMAKE_FILE_IN} ${QMAKE_FILE_OUT}
+headers.output_function = outputFunction
+headers.commands = ln -F -s ${QMAKE_FUNC_ABS_FILE_IN} ${QMAKE_FILE_OUT}
 headers.CONFIG = no_link target_predeps
 QMAKE_EXTRA_COMPILERS += headers
 
