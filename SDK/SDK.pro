@@ -40,7 +40,9 @@ defineReplace(ABS_FILE_IN) {
 
 defineReplace(outputFunction) {
     path = $$absolute_path($$1, $$OUT_PWD)
-    return($$DESTDIR/$$replace(path, $$[QT_INSTALL_PREFIX/get], ))
+    path = $$replace(path, $$[QT_INSTALL_PREFIX/get], )
+    path = $$replace(path, _debug, )
+    return($$DESTDIR/$$path)
 }
 
 libs.input = LIB_PATHS
